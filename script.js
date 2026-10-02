@@ -1,463 +1,370 @@
-```javascript
 async function analyzeURL() {
 
-    const urlInput = document.getElementById("urlInput");
-    const resultDiv = document.getElementById("result");
+```
+const urlInput = document.getElementById("urlInput");
+const resultDiv = document.getElementById("result");
 
-    const url = urlInput.value.trim();
+const url = urlInput.value.trim();
 
+if (url === "") {
+    resultDiv.innerHTML = "<p>يرجى إدخال رابط أولًا.</p>";
+    return;
+}
 
-    // التأكد من إدخال الرابط
+resultDiv.innerHTML = "<p>جاري تحليل الرابط...</p>";
 
-    if (url === "") {
+try {
 
-        resultDiv.innerHTML =
-            "<p>يرجى إدخال رابط أولًا.</p>";
+    const response = await fetch(
+        "https://linkguard-backend-w8r0.onrender.com/analyze",
+        {
+            method: "POST",
 
-        return;
+            headers: {
+                "Content-Type": "application/json"
+            },
+
+            body: JSON.stringify({
+                url: url
+            })
+        }
+    );
+
+    const data = await response.json();
+
+    if (!response.ok) {
+        throw new Error("حدث خطأ في الخادم");
     }
 
+    var riskClass = "low";
 
-    // رسالة التحليل
+    if (data.risk === "مرتفع") {
+        riskClass = "high";
+    } else if (data.risk === "متوسط") {
+        riskClass = "medium";
+    }
+
+    var reasonsHTML = "";
+
+    data.reasons.forEach(function(reason) {
+
+        reasonsHTML +=
+            "<li>" +
+            reason +
+            "</li>";
+
+    });
+
+    var degree = data.score * 3.6;
+
+    saveToHistory(data);
 
     resultDiv.innerHTML =
-        "<p>جاري تحليل الرابط...</p>";
 
+        "<div class=\"result-card " +
+            riskClass +
+        "\">" +
 
-    try {
+            "<h2>" +
+                "نتيجة التحليل" +
+            "</h2>" +
 
-        // إرسال الرابط إلى Backend
+            "<p>" +
+                "<strong>" +
+                    "الرابط:" +
+                "</strong> " +
 
-        const response = await fetch(
-            "https://linkguard-backend-w8r0.onrender.com/analyze",
-            {
-                method: "POST",
+                "<span dir=\"ltr\">" +
+                    data.url +
+                "</span>" +
+            "</p>" +
 
-                headers: {
-                    "Content-Type": "application/json"
-                },
+            "<div class=\"risk-meter\">" +
 
-                body: JSON.stringify({
-                    url: url
-                })
-            }
-        );
+                "<div class=\"meter-circle\" " +
 
+                    "style=\"--degree: " +
+                    degree +
+                    "deg;\">" +
 
-        const data = await response.json();
+                    "<div class=\"meter-inner\">" +
 
+                        "<span class=\"meter-score\">" +
+                            data.score +
+                        "</span>" +
 
-        // التحقق من النتيجة
-
-        if (!response.ok) {
-            throw new Error("حدث خطأ في الخادم");
-        }
-
-
-        // تحديد مستوى الخطورة
-
-        var riskClass = "low";
-
-
-        if (data.risk === "مرتفع") {
-
-            riskClass = "high";
-
-        } else if (data.risk === "متوسط") {
-
-            riskClass = "medium";
-        }
-
-
-        // تجهيز أسباب النتيجة
-
-        var reasonsHTML = "";
-
-
-        data.reasons.forEach(function(reason) {
-
-            reasonsHTML +=
-                "<li>" +
-                reason +
-                "</li>";
-
-        });
-
-
-        // حساب دوران المؤشر
-
-        var degree = data.score * 3.6;
-
-
-        // حفظ التحليل
-
-        saveToHistory(data);
-
-
-        // عرض النتيجة
-
-        resultDiv.innerHTML =
-
-            "<div class=\"result-card " +
-                riskClass +
-            "\">" +
-
-
-                "<h2>" +
-                    "نتيجة التحليل" +
-                "</h2>" +
-
-
-                "<p>" +
-
-                    "<strong>" +
-                        "الرابط:" +
-                    "</strong> " +
-
-                    "<span dir=\"ltr\">" +
-                        data.url +
-                    "</span>" +
-
-                "</p>" +
-
-
-                // مؤشر الخطورة
-
-                "<div class=\"risk-meter\">" +
-
-                    "<div class=\"meter-circle\" " +
-
-                        "style=\"--degree: " +
-                        degree +
-                        "deg;\">" +
-
-
-                        "<div class=\"meter-inner\">" +
-
-                            "<span class=\"meter-score\">" +
-                                data.score +
-                            "</span>" +
-
-                            "<span class=\"meter-total\">" +
-                                "/ 100" +
-                            "</span>" +
-
-                        "</div>" +
+                        "<span class=\"meter-total\">" +
+                            "/ 100" +
+                        "</span>" +
 
                     "</div>" +
 
                 "</div>" +
 
+            "</div>" +
 
-                // مستوى الخطورة
+            "<div class=\"risk " +
+                riskClass +
+            "\">" +
 
-                "<div class=\"risk " +
-                    riskClass +
-                "\">" +
+                "مستوى الخطورة: " +
+                data.risk +
 
-                    "مستوى الخطورة: " +
-                    data.risk +
+            "</div>" +
 
-                "</div>" +
+            "<h3>" +
+                "أسباب النتيجة:" +
+            "</h3>" +
 
+            "<ul>" +
+                reasonsHTML +
+            "</ul>" +
 
-                // الأسباب
+            "<button " +
+                "class=\"new-analysis\" " +
+                "onclick=\"newAnalysis()\">" +
 
-                "<h3>" +
-                    "أسباب النتيجة:" +
-                "</h3>" +
+                "تحليل رابط جديد" +
 
+            "</button>" +
 
-                "<ul>" +
+        "</div>";
 
-                    reasonsHTML +
+    displayHistory();
+    updateStats();
 
-                "</ul>" +
+} catch (error) {
 
+    console.error("Error:", error);
 
-                // زر تحليل جديد
+    resultDiv.innerHTML =
 
-                "<button " +
-                    "class=\"new-analysis\" " +
-                    "onclick=\"newAnalysis()\">" +
+        "<p>" +
+            "تعذر الاتصال بالخادم." +
+        "</p>" +
 
-                    "تحليل رابط جديد" +
+        "<p>" +
+            "تأكد من تشغيل Backend." +
+        "</p>";
+}
+```
 
-                "</button>" +
-
-
-            "</div>";
-
-
-        // تحديث السجل والإحصائيات
-
-        displayHistory();
-        updateStats();
-
-
-    } catch (error) {
-
-        console.error("Error:", error);
-
-
-        resultDiv.innerHTML =
-
-            "<p>" +
-                "تعذر الاتصال بالخادم." +
-            "</p>" +
-
-            "<p>" +
-                "تأكد من تشغيل Backend." +
-            "</p>";
-
-    }
 }
 
-
-
 /* =========================================
-   حفظ التحليل
+حفظ التحليل
 ========================================= */
 
 function saveToHistory(data) {
 
-    var history = JSON.parse(
-        localStorage.getItem(
-            "linkguard_history"
-        )
-    ) || [];
+```
+var history = JSON.parse(
+    localStorage.getItem(
+        "linkguard_history"
+    )
+) || [];
 
+history.unshift({
 
-    history.unshift({
+    url: data.url,
 
-        url: data.url,
+    score: data.score,
 
-        score: data.score,
+    risk: data.risk
 
-        risk: data.risk
+});
 
-    });
+history = history.slice(0, 10);
 
+localStorage.setItem(
+    "linkguard_history",
+    JSON.stringify(history)
+);
+```
 
-    // الاحتفاظ بآخر 10 تحليلات
-
-    history = history.slice(0, 10);
-
-
-    localStorage.setItem(
-        "linkguard_history",
-        JSON.stringify(history)
-    );
 }
 
-
-
 /* =========================================
-   عرض سجل التحليلات
+عرض سجل التحليلات
 ========================================= */
 
 function displayHistory() {
 
-    var historyDiv =
-        document.getElementById("history");
+```
+var historyDiv =
+    document.getElementById("history");
 
-
-    if (!historyDiv) {
-        return;
-    }
-
-
-    var history = JSON.parse(
-        localStorage.getItem(
-            "linkguard_history"
-        )
-    ) || [];
-
-
-    if (history.length === 0) {
-
-        historyDiv.innerHTML =
-            "<p>لا توجد تحليلات سابقة.</p>";
-
-        return;
-    }
-
-
-    var historyHTML = "";
-
-
-    history.forEach(function(item) {
-
-
-        var riskClass = "low";
-
-
-        if (item.risk === "مرتفع") {
-
-            riskClass = "high";
-
-        } else if (item.risk === "متوسط") {
-
-            riskClass = "medium";
-
-        }
-
-
-        historyHTML +=
-
-            "<div class=\"history-item\">" +
-
-
-                "<div class=\"history-info\">" +
-
-                    "<span class=\"history-label\">" +
-
-                        "الرابط الذي تم تحليله" +
-
-                    "</span>" +
-
-
-                    "<div " +
-                        "class=\"history-url\" " +
-                        "dir=\"ltr\">" +
-
-                        item.url +
-
-                    "</div>" +
-
-                "</div>" +
-
-
-                "<div class=\"history-score-box\">" +
-
-                    "<span class=\"history-score-label\">" +
-
-                        "درجة الخطورة" +
-
-                    "</span>" +
-
-
-                    "<span class=\"history-score\">" +
-
-                        item.score +
-                        " / 100" +
-
-                    "</span>" +
-
-                "</div>" +
-
-
-                "<div class=\"history-risk " +
-                    riskClass +
-                "\">" +
-
-                    item.risk +
-
-                "</div>" +
-
-
-            "</div>";
-
-    });
-
-
-    historyDiv.innerHTML =
-        historyHTML;
+if (!historyDiv) {
+    return;
 }
 
+var history = JSON.parse(
+    localStorage.getItem(
+        "linkguard_history"
+    )
+) || [];
 
+if (history.length === 0) {
+
+    historyDiv.innerHTML =
+        "<p>لا توجد تحليلات سابقة.</p>";
+
+    return;
+}
+
+var historyHTML = "";
+
+history.forEach(function(item) {
+
+    var riskClass = "low";
+
+    if (item.risk === "مرتفع") {
+
+        riskClass = "high";
+
+    } else if (item.risk === "متوسط") {
+
+        riskClass = "medium";
+
+    }
+
+    historyHTML +=
+
+        "<div class=\"history-item\">" +
+
+            "<div class=\"history-info\">" +
+
+                "<span class=\"history-label\">" +
+                    "الرابط الذي تم تحليله" +
+                "</span>" +
+
+                "<div " +
+                    "class=\"history-url\" " +
+                    "dir=\"ltr\">" +
+
+                    item.url +
+
+                "</div>" +
+
+            "</div>" +
+
+            "<div class=\"history-score-box\">" +
+
+                "<span class=\"history-score-label\">" +
+                    "درجة الخطورة" +
+                "</span>" +
+
+                "<span class=\"history-score\">" +
+
+                    item.score +
+                    " / 100" +
+
+                "</span>" +
+
+            "</div>" +
+
+            "<div class=\"history-risk " +
+                riskClass +
+            "\">" +
+
+                item.risk +
+
+            "</div>" +
+
+        "</div>";
+});
+
+historyDiv.innerHTML =
+    historyHTML;
+```
+
+}
 
 /* =========================================
-   تحديث الإحصائيات
+تحديث الإحصائيات
 ========================================= */
 
 function updateStats() {
 
-    var history = JSON.parse(
-        localStorage.getItem(
-            "linkguard_history"
-        )
-    ) || [];
+```
+var history = JSON.parse(
+    localStorage.getItem(
+        "linkguard_history"
+    )
+) || [];
 
+var total = history.length;
 
-    var total = history.length;
+var low = 0;
+var medium = 0;
+var high = 0;
 
-    var low = 0;
-    var medium = 0;
-    var high = 0;
+history.forEach(function(item) {
 
+    if (item.risk === "منخفض") {
 
-    history.forEach(function(item) {
+        low++;
 
-        if (item.risk === "منخفض") {
+    } else if (item.risk === "متوسط") {
 
-            low++;
+        medium++;
 
-        } else if (item.risk === "متوسط") {
+    } else if (item.risk === "مرتفع") {
 
-            medium++;
+        high++;
 
-        } else if (item.risk === "مرتفع") {
+    }
 
-            high++;
-        }
+});
 
-    });
+document.getElementById(
+    "totalCount"
+).textContent = total;
 
+document.getElementById(
+    "lowCount"
+).textContent = low;
 
-    document.getElementById(
-        "totalCount"
-    ).textContent = total;
+document.getElementById(
+    "mediumCount"
+).textContent = medium;
 
+document.getElementById(
+    "highCount"
+).textContent = high;
+```
 
-    document.getElementById(
-        "lowCount"
-    ).textContent = low;
-
-
-    document.getElementById(
-        "mediumCount"
-    ).textContent = medium;
-
-
-    document.getElementById(
-        "highCount"
-    ).textContent = high;
 }
 
-
-
 /* =========================================
-   تحليل رابط جديد
+تحليل رابط جديد
 ========================================= */
 
 function newAnalysis() {
 
-    const urlInput =
-        document.getElementById(
-            "urlInput"
-        );
+```
+const urlInput =
+    document.getElementById(
+        "urlInput"
+    );
 
+const resultDiv =
+    document.getElementById(
+        "result"
+    );
 
-    const resultDiv =
-        document.getElementById(
-            "result"
-        );
+urlInput.value = "";
 
+resultDiv.innerHTML = "";
 
-    urlInput.value = "";
+urlInput.focus();
+```
 
-    resultDiv.innerHTML = "";
-
-    urlInput.focus();
 }
 
-
-
 /* =========================================
-   تشغيل السجل والإحصائيات عند فتح الموقع
+تشغيل السجل والإحصائيات عند فتح الموقع
 ========================================= */
 
 displayHistory();
 updateStats();
-```
