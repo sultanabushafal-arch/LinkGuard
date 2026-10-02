@@ -1,3 +1,4 @@
+```javascript
 async function analyzeURL() {
 
     const urlInput = document.getElementById("urlInput");
@@ -28,7 +29,7 @@ async function analyzeURL() {
         // إرسال الرابط إلى Backend
 
         const response = await fetch(
-            "https://linkguard-backend-w8r0.onrender.com/analyze"
+            "https://linkguard-backend-w8r0.onrender.com/analyze",
             {
                 method: "POST",
 
@@ -458,5 +459,5 @@ function newAnalysis() {
 ========================================= */
 
 displayHistory();
-
 updateStats();
+```
