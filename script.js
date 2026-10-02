@@ -1,13 +1,4 @@
-
-هذه ليست جزءًا من JavaScript، وهي التي تسبب الخطأ `"" is not a function`.
-
-### سوِّ هذا بالضبط:
-
-افتح `script.js` في GitHub، **احذف كل المحتوى الموجود فيه بالكامل**، ثم الصق هذا الكود فقط — بدون أي ` ``` ` في البداية أو النهاية:
-
-```javascript
 async function analyzeURL() {
-
     const urlInput = document.getElementById("urlInput");
     const resultDiv = document.getElementById("result");
 
@@ -21,7 +12,6 @@ async function analyzeURL() {
     resultDiv.innerHTML = "<p>جاري تحليل الرابط...</p>";
 
     try {
-
         const response = await fetch(
             "https://linkguard-backend-w8r0.onrender.com/analyze",
             {
@@ -61,7 +51,6 @@ async function analyzeURL() {
 
         resultDiv.innerHTML =
             "<div class=\"result-card " + riskClass + "\">" +
-
                 "<h2>نتيجة التحليل</h2>" +
 
                 "<p>" +
@@ -72,14 +61,11 @@ async function analyzeURL() {
                 "</p>" +
 
                 "<div class=\"risk-meter\">" +
-
-                    "<div class=\"meter-circle\" " +
-                        "style=\"--degree: " +
+                    "<div class=\"meter-circle\" style=\"--degree: " +
                         degree +
                         "deg;\">" +
 
                         "<div class=\"meter-inner\">" +
-
                             "<span class=\"meter-score\">" +
                                 data.score +
                             "</span>" +
@@ -87,20 +73,16 @@ async function analyzeURL() {
                             "<span class=\"meter-total\">" +
                                 "/ 100" +
                             "</span>" +
-
                         "</div>" +
 
                     "</div>" +
-
                 "</div>" +
 
                 "<div class=\"risk " +
                     riskClass +
                 "\">" +
-
                     "مستوى الخطورة: " +
                     data.risk +
-
                 "</div>" +
 
                 "<h3>أسباب النتيجة:</h3>" +
@@ -109,12 +91,8 @@ async function analyzeURL() {
                     reasonsHTML +
                 "</ul>" +
 
-                "<button " +
-                    "class=\"new-analysis\" " +
-                    "onclick=\"newAnalysis()\">" +
-
+                "<button class=\"new-analysis\" onclick=\"newAnalysis()\">" +
                     "تحليل رابط جديد" +
-
                 "</button>" +
 
             "</div>";
@@ -123,7 +101,6 @@ async function analyzeURL() {
         updateStats();
 
     } catch (error) {
-
         console.error("Error:", error);
 
         resultDiv.innerHTML =
@@ -134,7 +111,6 @@ async function analyzeURL() {
 
 
 function saveToHistory(data) {
-
     var history = JSON.parse(
         localStorage.getItem("linkguard_history")
     ) || [];
@@ -155,9 +131,7 @@ function saveToHistory(data) {
 
 
 function displayHistory() {
-
-    var historyDiv =
-        document.getElementById("history");
+    var historyDiv = document.getElementById("history");
 
     if (!historyDiv) {
         return;
@@ -168,17 +142,14 @@ function displayHistory() {
     ) || [];
 
     if (history.length === 0) {
-
         historyDiv.innerHTML =
             "<p>لا توجد تحليلات سابقة.</p>";
-
         return;
     }
 
     var historyHTML = "";
 
     history.forEach(function(item) {
-
         var riskClass = "low";
 
         if (item.risk === "مرتفع") {
@@ -191,7 +162,6 @@ function displayHistory() {
             "<div class=\"history-item\">" +
 
                 "<div class=\"history-info\">" +
-
                     "<span class=\"history-label\">" +
                         "الرابط الذي تم تحليله" +
                     "</span>" +
@@ -199,11 +169,9 @@ function displayHistory() {
                     "<div class=\"history-url\" dir=\"ltr\">" +
                         item.url +
                     "</div>" +
-
                 "</div>" +
 
                 "<div class=\"history-score-box\">" +
-
                     "<span class=\"history-score-label\">" +
                         "درجة الخطورة" +
                     "</span>" +
@@ -212,15 +180,12 @@ function displayHistory() {
                         item.score +
                         " / 100" +
                     "</span>" +
-
                 "</div>" +
 
                 "<div class=\"history-risk " +
                     riskClass +
                 "\">" +
-
                     item.risk +
-
                 "</div>" +
 
             "</div>";
@@ -231,7 +196,6 @@ function displayHistory() {
 
 
 function updateStats() {
-
     var history = JSON.parse(
         localStorage.getItem("linkguard_history")
     ) || [];
@@ -242,7 +206,6 @@ function updateStats() {
     var high = 0;
 
     history.forEach(function(item) {
-
         if (item.risk === "منخفض") {
             low++;
         } else if (item.risk === "متوسط") {
@@ -250,7 +213,6 @@ function updateStats() {
         } else if (item.risk === "مرتفع") {
             high++;
         }
-
     });
 
     document.getElementById("totalCount").textContent = total;
@@ -261,12 +223,8 @@ function updateStats() {
 
 
 function newAnalysis() {
-
-    const urlInput =
-        document.getElementById("urlInput");
-
-    const resultDiv =
-        document.getElementById("result");
+    const urlInput = document.getElementById("urlInput");
+    const resultDiv = document.getElementById("result");
 
     urlInput.value = "";
     resultDiv.innerHTML = "";
