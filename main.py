@@ -1,4 +1,5 @@
 from flask import Flask, request, jsonify, send_from_directory
+from flask_cors import CORS
 import os
 
 from scanner import analyze_url
@@ -13,6 +14,8 @@ app = Flask(
     static_folder=FRONTEND_DIR,
     static_url_path=""
 )
+
+CORS(app)
 
 
 @app.route("/analyze", methods=["POST"])
@@ -29,19 +32,3 @@ def analyze():
     result = analyze_url(url)
 
     return jsonify(result)
-
-
-@app.route("/")
-def home():
-    return send_from_directory(
-        FRONTEND_DIR,
-        "index.html"
-    )
-
-
-if __name__ == "__main__":
-    app.run(
-        host="127.0.0.1",
-        port=5000,
-        debug=True
-    )
