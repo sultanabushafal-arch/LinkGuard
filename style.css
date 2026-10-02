@@ -1,0 +1,707 @@
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #0b1120;
+    color: #ffffff;
+    min-height: 100vh;
+}
+
+.container {
+    width: 90%;
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 70px 20px;
+}
+
+/* العنوان */
+
+h1 {
+    text-align: center;
+    font-size: 56px;
+    margin: 0;
+    letter-spacing: 2px;
+}
+
+.subtitle {
+    text-align: center;
+    color: #9ca3af;
+    font-size: 19px;
+    margin-top: 12px;
+    margin-bottom: 45px;
+}
+
+/* صندوق البحث */
+
+.scanner-box {
+    display: flex;
+    gap: 12px;
+    background: #111827;
+    padding: 12px;
+    border-radius: 18px;
+    border: 1px solid #263244;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+}
+
+input {
+    flex: 1;
+    min-width: 0;
+    padding: 18px;
+    border: none;
+    outline: none;
+    border-radius: 12px;
+    background: #1f2937;
+    color: white;
+    font-size: 16px;
+    direction: ltr;
+}
+
+input::placeholder {
+    color: #9ca3af;
+}
+
+/* زر التحليل */
+
+button {
+    padding: 18px 30px;
+    border: none;
+    border-radius: 12px;
+    background: #2563eb;
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+button:hover {
+    transform: translateY(-2px);
+    opacity: 0.9;
+}
+
+/* النتيجة */
+
+.result {
+    margin-top: 30px;
+}
+
+.result-card {
+    background: #111827;
+    border: 1px solid #263244;
+    border-radius: 20px;
+    padding: 30px;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.25);
+}
+
+.result-card h2 {
+    margin-top: 0;
+    font-size: 26px;
+}
+
+.result-card h3 {
+    margin-top: 30px;
+}
+
+.result-card p {
+    color: #d1d5db;
+    line-height: 1.8;
+}
+
+/* الدرجة */
+
+.score {
+    font-size: 48px;
+    font-weight: bold;
+    text-align: center;
+    margin: 25px 0;
+}
+
+/* مستوى الخطورة */
+
+.risk {
+    display: block;
+    width: fit-content;
+    margin: 0 auto 25px;
+    padding: 10px 24px;
+    border-radius: 30px;
+    font-weight: bold;
+}
+
+/* منخفض */
+
+.result-card.low {
+    border-top: 4px solid #22c55e;
+}
+
+.risk.low {
+    background: #14532d;
+    color: #86efac;
+}
+
+/* متوسط */
+
+.result-card.medium {
+    border-top: 4px solid #f59e0b;
+}
+
+.risk.medium {
+    background: #78350f;
+    color: #fde68a;
+}
+
+/* مرتفع */
+
+.result-card.high {
+    border-top: 4px solid #ef4444;
+}
+
+.risk.high {
+    background: #7f1d1d;
+    color: #fecaca;
+}
+
+/* قائمة الأسباب */
+
+.result-card ul {
+    padding-right: 25px;
+    line-height: 2;
+    color: #d1d5db;
+}
+
+.result-card li {
+    margin-bottom: 8px;
+}
+
+/* الجوال */
+
+@media (max-width: 700px) {
+
+    .container {
+        padding: 40px 10px;
+    }
+
+    h1 {
+        font-size: 42px;
+    }
+
+    .scanner-box {
+        flex-direction: column;
+    }
+
+    button {
+        width: 100%;
+    }
+
+    .score {
+        font-size: 40px;
+    }
+}/* الشعار */
+
+.brand {
+    text-align: center;
+}
+
+.logo {
+    font-size: 60px;
+    margin-bottom: 10px;
+}
+
+
+/* البطاقة التعريفية */
+
+.info-card {
+    background: #111827;
+    border: 1px solid #263244;
+    border-radius: 18px;
+    padding: 25px;
+    margin-bottom: 25px;
+    text-align: center;
+}
+
+.info-card h2 {
+    margin-top: 0;
+}
+
+.info-card p {
+    color: #9ca3af;
+    line-height: 1.8;
+}
+
+
+/* المميزات */
+
+.features {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px;
+    margin-top: 35px;
+}
+
+.feature {
+    background: #111827;
+    border: 1px solid #263244;
+    border-radius: 18px;
+    padding: 25px;
+    text-align: center;
+}
+
+.feature-icon {
+    font-size: 35px;
+    margin-bottom: 10px;
+}
+
+.feature h3 {
+    margin-bottom: 10px;
+}
+
+.feature p {
+    color: #9ca3af;
+    line-height: 1.7;
+}
+
+
+/* الفوتر */
+
+footer {
+    text-align: center;
+    color: #6b7280;
+    margin-top: 50px;
+    font-size: 14px;
+}
+
+
+/* الجوال */
+
+@media (max-width: 700px) {
+
+    .features {
+        grid-template-columns: 1fr;
+    }
+
+}/* ألوان مؤشر الخطورة حسب المستوى */
+
+.result-card.low .meter-circle {
+    background:
+        conic-gradient(
+            #22c55e var(--degree),
+            #1f2937 var(--degree)
+        );
+}
+
+.result-card.medium .meter-circle {
+    background:
+        conic-gradient(
+            #f59e0b var(--degree),
+            #1f2937 var(--degree)
+        );
+}
+
+.result-card.high .meter-circle {
+    background:
+        conic-gradient(
+            #ef4444 var(--degree),
+            #1f2937 var(--degree)
+        );
+}.new-analysis {
+    display: block;
+    margin: 30px auto 0;
+    background: #1f2937;
+    border: 1px solid #374151;
+}
+
+.new-analysis:hover {
+    background: #374151;
+}/* بطاقات سجل التحليلات */
+
+.history-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+
+    background: #111827;
+    border: 1px solid #263244;
+    border-radius: 18px;
+
+    padding: 20px 22px;
+    margin-bottom: 14px;
+
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.18);
+
+    transition: transform 0.2s, border-color 0.2s;
+}
+
+.history-item:hover {
+    transform: translateY(-2px);
+    border-color: #3b82f6;
+}
+
+
+/* معلومات الرابط */
+
+.history-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.history-label {
+    display: block;
+    color: #6b7280;
+    font-size: 13px;
+    margin-bottom: 7px;
+}
+
+.history-url {
+    color: #e5e7eb;
+    font-size: 15px;
+
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+
+/* الدرجة */
+
+.history-score-box {
+    text-align: center;
+    min-width: 90px;
+}
+
+.history-score-label {
+    display: block;
+    color: #6b7280;
+    font-size: 13px;
+    margin-bottom: 5px;
+}
+
+.history-score {
+    font-size: 20px;
+    font-weight: bold;
+}
+
+
+/* مستوى الخطورة */
+
+.history-risk {
+    min-width: 85px;
+    text-align: center;
+
+    padding: 8px 14px;
+    border-radius: 20px;
+
+    font-weight: bold;
+}
+
+
+/* منخفض */
+
+.history-risk.low {
+    background: #14532d;
+    color: #86efac;
+}
+
+
+/* متوسط */
+
+.history-risk.medium {
+    background: #78350f;
+    color: #fde68a;
+}
+
+
+/* مرتفع */
+
+.history-risk.high {
+    background: #7f1d1d;
+    color: #fecaca;
+}
+
+
+/* الجوال */
+
+@media (max-width: 700px) {
+
+    .history-item {
+        flex-direction: column;
+        align-items: stretch;
+        text-align: center;
+    }
+
+    .history-url {
+        white-space: normal;
+        word-break: break-all;
+    }
+
+    .history-score-box {
+        min-width: auto;
+    }
+
+    .history-risk {
+        width: fit-content;
+        margin: 0 auto;
+    }
+}/* =========================================
+   لوحة الإحصائيات
+========================================= */
+
+.stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 15px;
+    margin-bottom: 25px;
+}
+
+
+.stat-card {
+    background: #111827;
+    border: 1px solid #263244;
+    border-radius: 18px;
+
+    padding: 20px 15px;
+
+    text-align: center;
+
+    transition: transform 0.2s, border-color 0.2s;
+}
+
+
+.stat-card:hover {
+    transform: translateY(-3px);
+    border-color: #3b82f6;
+}
+
+
+.stat-icon {
+    font-size: 28px;
+    margin-bottom: 8px;
+}
+
+
+.stat-number {
+    font-size: 30px;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+
+.stat-label {
+    color: #9ca3af;
+    font-size: 14px;
+}
+
+
+/* ألوان البطاقات */
+
+.low-stat {
+    border-top: 3px solid #22c55e;
+}
+
+
+.medium-stat {
+    border-top: 3px solid #f59e0b;
+}
+
+
+.high-stat {
+    border-top: 3px solid #ef4444;
+}
+
+
+
+/* =========================================
+   تحسين قسم السجل
+========================================= */
+
+.history-section {
+    margin-top: 40px;
+}
+
+
+.history-section > h2 {
+    text-align: center;
+    margin-bottom: 22px;
+}
+
+
+
+/* =========================================
+   بطاقات سجل التحليلات
+========================================= */
+
+.history-item {
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 20px;
+
+    background: #111827;
+
+    border: 1px solid #263244;
+
+    border-radius: 18px;
+
+    padding: 20px 22px;
+
+    margin-bottom: 14px;
+
+    box-shadow:
+        0 8px 25px rgba(0, 0, 0, 0.18);
+
+    transition:
+        transform 0.2s,
+        border-color 0.2s;
+}
+
+
+.history-item:hover {
+    transform: translateY(-2px);
+
+    border-color: #3b82f6;
+}
+
+
+
+/* معلومات الرابط */
+
+.history-info {
+    flex: 1;
+    min-width: 0;
+}
+
+
+.history-label {
+    display: block;
+
+    color: #6b7280;
+
+    font-size: 13px;
+
+    margin-bottom: 7px;
+}
+
+
+.history-url {
+    color: #e5e7eb;
+
+    font-size: 15px;
+
+    overflow: hidden;
+
+    text-overflow: ellipsis;
+
+    white-space: nowrap;
+}
+
+
+
+/* الدرجة */
+
+.history-score-box {
+    text-align: center;
+
+    min-width: 100px;
+}
+
+
+.history-score-label {
+    display: block;
+
+    color: #6b7280;
+
+    font-size: 13px;
+
+    margin-bottom: 5px;
+}
+
+
+.history-score {
+    font-size: 20px;
+
+    font-weight: bold;
+}
+
+
+
+/* مستوى الخطورة */
+
+.history-risk {
+    min-width: 85px;
+
+    text-align: center;
+
+    padding: 8px 14px;
+
+    border-radius: 20px;
+
+    font-weight: bold;
+}
+
+
+.history-risk.low {
+    background: #14532d;
+
+    color: #86efac;
+}
+
+
+.history-risk.medium {
+    background: #78350f;
+
+    color: #fde68a;
+}
+
+
+.history-risk.high {
+    background: #7f1d1d;
+
+    color: #fecaca;
+}
+
+
+
+/* =========================================
+   الجوال
+========================================= */
+
+@media (max-width: 700px) {
+
+    .stats {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+
+    .history-item {
+        flex-direction: column;
+
+        align-items: stretch;
+
+        text-align: center;
+    }
+
+
+    .history-url {
+        white-space: normal;
+
+        word-break: break-all;
+    }
+
+
+    .history-score-box {
+        min-width: auto;
+    }
+
+
+    .history-risk {
+        width: fit-content;
+
+        margin: 0 auto;
+    }
+
+}
