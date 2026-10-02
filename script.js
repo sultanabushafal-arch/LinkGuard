@@ -1,280 +1,278 @@
+
+هذه ليست جزءًا من JavaScript، وهي التي تسبب الخطأ `"" is not a function`.
+
+### سوِّ هذا بالضبط:
+
+افتح `script.js` في GitHub، **احذف كل المحتوى الموجود فيه بالكامل**، ثم الصق هذا الكود فقط — بدون أي ` ``` ` في البداية أو النهاية:
+
+```javascript
 async function analyzeURL() {
 
-```
-const urlInput = document.getElementById("urlInput");
-const resultDiv = document.getElementById("result");
+    const urlInput = document.getElementById("urlInput");
+    const resultDiv = document.getElementById("result");
 
-const url = urlInput.value.trim();
+    const url = urlInput.value.trim();
 
-if (url === "") {
-    resultDiv.innerHTML = "<p>يرجى إدخال رابط أولًا.</p>";
-    return;
-}
+    if (url === "") {
+        resultDiv.innerHTML = "<p>يرجى إدخال رابط أولًا.</p>";
+        return;
+    }
 
-resultDiv.innerHTML = "<p>جاري تحليل الرابط...</p>";
+    resultDiv.innerHTML = "<p>جاري تحليل الرابط...</p>";
 
-try {
+    try {
 
-    const response = await fetch(
-        "https://linkguard-backend-w8r0.onrender.com/analyze",
-        {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                url: url
-            })
+        const response = await fetch(
+            "https://linkguard-backend-w8r0.onrender.com/analyze",
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    url: url
+                })
+            }
+        );
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            throw new Error("حدث خطأ في الخادم");
         }
-    );
 
-    const data = await response.json();
+        var riskClass = "low";
 
-    if (!response.ok) {
-        throw new Error("حدث خطأ في الخادم");
-    }
+        if (data.risk === "مرتفع") {
+            riskClass = "high";
+        } else if (data.risk === "متوسط") {
+            riskClass = "medium";
+        }
 
-    var riskClass = "low";
+        var reasonsHTML = "";
 
-    if (data.risk === "مرتفع") {
-        riskClass = "high";
-    } else if (data.risk === "متوسط") {
-        riskClass = "medium";
-    }
+        data.reasons.forEach(function(reason) {
+            reasonsHTML += "<li>" + reason + "</li>";
+        });
 
-    var reasonsHTML = "";
+        var degree = data.score * 3.6;
 
-    data.reasons.forEach(function(reason) {
-        reasonsHTML += "<li>" + reason + "</li>";
-    });
+        saveToHistory(data);
 
-    var degree = data.score * 3.6;
+        resultDiv.innerHTML =
+            "<div class=\"result-card " + riskClass + "\">" +
 
-    saveToHistory(data);
+                "<h2>نتيجة التحليل</h2>" +
 
-    resultDiv.innerHTML =
-        "<div class=\"result-card " + riskClass + "\">" +
+                "<p>" +
+                    "<strong>الرابط:</strong> " +
+                    "<span dir=\"ltr\">" +
+                        data.url +
+                    "</span>" +
+                "</p>" +
 
-            "<h2>نتيجة التحليل</h2>" +
+                "<div class=\"risk-meter\">" +
 
-            "<p>" +
-                "<strong>الرابط:</strong> " +
-                "<span dir=\"ltr\">" +
-                    data.url +
-                "</span>" +
-            "</p>" +
+                    "<div class=\"meter-circle\" " +
+                        "style=\"--degree: " +
+                        degree +
+                        "deg;\">" +
 
-            "<div class=\"risk-meter\">" +
+                        "<div class=\"meter-inner\">" +
 
-                "<div class=\"meter-circle\" " +
-                    "style=\"--degree: " +
-                    degree +
-                    "deg;\">" +
+                            "<span class=\"meter-score\">" +
+                                data.score +
+                            "</span>" +
 
-                    "<div class=\"meter-inner\">" +
+                            "<span class=\"meter-total\">" +
+                                "/ 100" +
+                            "</span>" +
 
-                        "<span class=\"meter-score\">" +
-                            data.score +
-                        "</span>" +
-
-                        "<span class=\"meter-total\">" +
-                            "/ 100" +
-                        "</span>" +
+                        "</div>" +
 
                     "</div>" +
 
                 "</div>" +
 
-            "</div>" +
+                "<div class=\"risk " +
+                    riskClass +
+                "\">" +
 
-            "<div class=\"risk " +
-                riskClass +
-            "\">" +
+                    "مستوى الخطورة: " +
+                    data.risk +
 
-                "مستوى الخطورة: " +
-                data.risk +
+                "</div>" +
 
-            "</div>" +
+                "<h3>أسباب النتيجة:</h3>" +
 
-            "<h3>أسباب النتيجة:</h3>" +
+                "<ul>" +
+                    reasonsHTML +
+                "</ul>" +
 
-            "<ul>" +
-                reasonsHTML +
-            "</ul>" +
+                "<button " +
+                    "class=\"new-analysis\" " +
+                    "onclick=\"newAnalysis()\">" +
 
-            "<button " +
-                "class=\"new-analysis\" " +
-                "onclick=\"newAnalysis()\">" +
+                    "تحليل رابط جديد" +
 
-                "تحليل رابط جديد" +
+                "</button>" +
 
-            "</button>" +
+            "</div>";
 
-        "</div>";
+        displayHistory();
+        updateStats();
 
-    displayHistory();
-    updateStats();
+    } catch (error) {
 
-} catch (error) {
+        console.error("Error:", error);
 
-    console.error("Error:", error);
-
-    resultDiv.innerHTML =
-        "<p>تعذر الاتصال بالخادم.</p>" +
-        "<p>تأكد من تشغيل Backend.</p>";
+        resultDiv.innerHTML =
+            "<p>تعذر الاتصال بالخادم.</p>" +
+            "<p>تأكد من تشغيل Backend.</p>";
+    }
 }
-```
 
-}
 
 function saveToHistory(data) {
 
-```
-var history = JSON.parse(
-    localStorage.getItem("linkguard_history")
-) || [];
+    var history = JSON.parse(
+        localStorage.getItem("linkguard_history")
+    ) || [];
 
-history.unshift({
-    url: data.url,
-    score: data.score,
-    risk: data.risk
-});
+    history.unshift({
+        url: data.url,
+        score: data.score,
+        risk: data.risk
+    });
 
-history = history.slice(0, 10);
+    history = history.slice(0, 10);
 
-localStorage.setItem(
-    "linkguard_history",
-    JSON.stringify(history)
-);
-```
-
+    localStorage.setItem(
+        "linkguard_history",
+        JSON.stringify(history)
+    );
 }
+
 
 function displayHistory() {
 
-```
-var historyDiv =
-    document.getElementById("history");
+    var historyDiv =
+        document.getElementById("history");
 
-if (!historyDiv) {
-    return;
-}
-
-var history = JSON.parse(
-    localStorage.getItem("linkguard_history")
-) || [];
-
-if (history.length === 0) {
-
-    historyDiv.innerHTML =
-        "<p>لا توجد تحليلات سابقة.</p>";
-
-    return;
-}
-
-var historyHTML = "";
-
-history.forEach(function(item) {
-
-    var riskClass = "low";
-
-    if (item.risk === "مرتفع") {
-        riskClass = "high";
-    } else if (item.risk === "متوسط") {
-        riskClass = "medium";
+    if (!historyDiv) {
+        return;
     }
 
-    historyHTML +=
-        "<div class=\"history-item\">" +
+    var history = JSON.parse(
+        localStorage.getItem("linkguard_history")
+    ) || [];
 
-            "<div class=\"history-info\">" +
+    if (history.length === 0) {
 
-                "<span class=\"history-label\">" +
-                    "الرابط الذي تم تحليله" +
-                "</span>" +
+        historyDiv.innerHTML =
+            "<p>لا توجد تحليلات سابقة.</p>";
 
-                "<div class=\"history-url\" dir=\"ltr\">" +
-                    item.url +
+        return;
+    }
+
+    var historyHTML = "";
+
+    history.forEach(function(item) {
+
+        var riskClass = "low";
+
+        if (item.risk === "مرتفع") {
+            riskClass = "high";
+        } else if (item.risk === "متوسط") {
+            riskClass = "medium";
+        }
+
+        historyHTML +=
+            "<div class=\"history-item\">" +
+
+                "<div class=\"history-info\">" +
+
+                    "<span class=\"history-label\">" +
+                        "الرابط الذي تم تحليله" +
+                    "</span>" +
+
+                    "<div class=\"history-url\" dir=\"ltr\">" +
+                        item.url +
+                    "</div>" +
+
                 "</div>" +
 
-            "</div>" +
+                "<div class=\"history-score-box\">" +
 
-            "<div class=\"history-score-box\">" +
+                    "<span class=\"history-score-label\">" +
+                        "درجة الخطورة" +
+                    "</span>" +
 
-                "<span class=\"history-score-label\">" +
-                    "درجة الخطورة" +
-                "</span>" +
+                    "<span class=\"history-score\">" +
+                        item.score +
+                        " / 100" +
+                    "</span>" +
 
-                "<span class=\"history-score\">" +
-                    item.score +
-                    " / 100" +
-                "</span>" +
+                "</div>" +
 
-            "</div>" +
+                "<div class=\"history-risk " +
+                    riskClass +
+                "\">" +
 
-            "<div class=\"history-risk " +
-                riskClass +
-            "\">" +
+                    item.risk +
 
-                item.risk +
+                "</div>" +
 
-            "</div>" +
+            "</div>";
+    });
 
-        "</div>";
-});
-
-historyDiv.innerHTML = historyHTML;
-```
-
+    historyDiv.innerHTML = historyHTML;
 }
+
 
 function updateStats() {
 
-```
-var history = JSON.parse(
-    localStorage.getItem("linkguard_history")
-) || [];
+    var history = JSON.parse(
+        localStorage.getItem("linkguard_history")
+    ) || [];
 
-var total = history.length;
-var low = 0;
-var medium = 0;
-var high = 0;
+    var total = history.length;
+    var low = 0;
+    var medium = 0;
+    var high = 0;
 
-history.forEach(function(item) {
+    history.forEach(function(item) {
 
-    if (item.risk === "منخفض") {
-        low++;
-    } else if (item.risk === "متوسط") {
-        medium++;
-    } else if (item.risk === "مرتفع") {
-        high++;
-    }
+        if (item.risk === "منخفض") {
+            low++;
+        } else if (item.risk === "متوسط") {
+            medium++;
+        } else if (item.risk === "مرتفع") {
+            high++;
+        }
 
-});
+    });
 
-document.getElementById("totalCount").textContent = total;
-document.getElementById("lowCount").textContent = low;
-document.getElementById("mediumCount").textContent = medium;
-document.getElementById("highCount").textContent = high;
-```
-
+    document.getElementById("totalCount").textContent = total;
+    document.getElementById("lowCount").textContent = low;
+    document.getElementById("mediumCount").textContent = medium;
+    document.getElementById("highCount").textContent = high;
 }
+
 
 function newAnalysis() {
 
-```
-const urlInput =
-    document.getElementById("urlInput");
+    const urlInput =
+        document.getElementById("urlInput");
 
-const resultDiv =
-    document.getElementById("result");
+    const resultDiv =
+        document.getElementById("result");
 
-urlInput.value = "";
-resultDiv.innerHTML = "";
-urlInput.focus();
-```
-
+    urlInput.value = "";
+    resultDiv.innerHTML = "";
+    urlInput.focus();
 }
+
 
 displayHistory();
 updateStats();
