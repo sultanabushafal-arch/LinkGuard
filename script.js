@@ -28,7 +28,7 @@ async function analyzeURL() {
         // إرسال الرابط إلى Backend
 
         const response = await fetch(
-            "/analyze",
+            "https://linkguard-backend-w8r0.onrender.com/analyze"
             {
                 method: "POST",
 
