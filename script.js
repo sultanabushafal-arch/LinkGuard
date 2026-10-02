@@ -19,11 +19,9 @@ try {
         "https://linkguard-backend-w8r0.onrender.com/analyze",
         {
             method: "POST",
-
             headers: {
                 "Content-Type": "application/json"
             },
-
             body: JSON.stringify({
                 url: url
             })
@@ -47,12 +45,7 @@ try {
     var reasonsHTML = "";
 
     data.reasons.forEach(function(reason) {
-
-        reasonsHTML +=
-            "<li>" +
-            reason +
-            "</li>";
-
+        reasonsHTML += "<li>" + reason + "</li>";
     });
 
     var degree = data.score * 3.6;
@@ -60,20 +53,12 @@ try {
     saveToHistory(data);
 
     resultDiv.innerHTML =
+        "<div class=\"result-card " + riskClass + "\">" +
 
-        "<div class=\"result-card " +
-            riskClass +
-        "\">" +
-
-            "<h2>" +
-                "نتيجة التحليل" +
-            "</h2>" +
+            "<h2>نتيجة التحليل</h2>" +
 
             "<p>" +
-                "<strong>" +
-                    "الرابط:" +
-                "</strong> " +
-
+                "<strong>الرابط:</strong> " +
                 "<span dir=\"ltr\">" +
                     data.url +
                 "</span>" +
@@ -82,7 +67,6 @@ try {
             "<div class=\"risk-meter\">" +
 
                 "<div class=\"meter-circle\" " +
-
                     "style=\"--degree: " +
                     degree +
                     "deg;\">" +
@@ -112,9 +96,7 @@ try {
 
             "</div>" +
 
-            "<h3>" +
-                "أسباب النتيجة:" +
-            "</h3>" +
+            "<h3>أسباب النتيجة:</h3>" +
 
             "<ul>" +
                 reasonsHTML +
@@ -138,40 +120,24 @@ try {
     console.error("Error:", error);
 
     resultDiv.innerHTML =
-
-        "<p>" +
-            "تعذر الاتصال بالخادم." +
-        "</p>" +
-
-        "<p>" +
-            "تأكد من تشغيل Backend." +
-        "</p>";
+        "<p>تعذر الاتصال بالخادم.</p>" +
+        "<p>تأكد من تشغيل Backend.</p>";
 }
 ```
 
 }
-
-/* =========================================
-حفظ التحليل
-========================================= */
 
 function saveToHistory(data) {
 
 ```
 var history = JSON.parse(
-    localStorage.getItem(
-        "linkguard_history"
-    )
+    localStorage.getItem("linkguard_history")
 ) || [];
 
 history.unshift({
-
     url: data.url,
-
     score: data.score,
-
     risk: data.risk
-
 });
 
 history = history.slice(0, 10);
@@ -184,10 +150,6 @@ localStorage.setItem(
 
 }
 
-/* =========================================
-عرض سجل التحليلات
-========================================= */
-
 function displayHistory() {
 
 ```
@@ -199,9 +161,7 @@ if (!historyDiv) {
 }
 
 var history = JSON.parse(
-    localStorage.getItem(
-        "linkguard_history"
-    )
+    localStorage.getItem("linkguard_history")
 ) || [];
 
 if (history.length === 0) {
@@ -219,17 +179,12 @@ history.forEach(function(item) {
     var riskClass = "low";
 
     if (item.risk === "مرتفع") {
-
         riskClass = "high";
-
     } else if (item.risk === "متوسط") {
-
         riskClass = "medium";
-
     }
 
     historyHTML +=
-
         "<div class=\"history-item\">" +
 
             "<div class=\"history-info\">" +
@@ -238,12 +193,8 @@ history.forEach(function(item) {
                     "الرابط الذي تم تحليله" +
                 "</span>" +
 
-                "<div " +
-                    "class=\"history-url\" " +
-                    "dir=\"ltr\">" +
-
+                "<div class=\"history-url\" dir=\"ltr\">" +
                     item.url +
-
                 "</div>" +
 
             "</div>" +
@@ -255,10 +206,8 @@ history.forEach(function(item) {
                 "</span>" +
 
                 "<span class=\"history-score\">" +
-
                     item.score +
                     " / 100" +
-
                 "</span>" +
 
             "</div>" +
@@ -274,27 +223,19 @@ history.forEach(function(item) {
         "</div>";
 });
 
-historyDiv.innerHTML =
-    historyHTML;
+historyDiv.innerHTML = historyHTML;
 ```
 
 }
-
-/* =========================================
-تحديث الإحصائيات
-========================================= */
 
 function updateStats() {
 
 ```
 var history = JSON.parse(
-    localStorage.getItem(
-        "linkguard_history"
-    )
+    localStorage.getItem("linkguard_history")
 ) || [];
 
 var total = history.length;
-
 var low = 0;
 var medium = 0;
 var high = 0;
@@ -302,69 +243,38 @@ var high = 0;
 history.forEach(function(item) {
 
     if (item.risk === "منخفض") {
-
         low++;
-
     } else if (item.risk === "متوسط") {
-
         medium++;
-
     } else if (item.risk === "مرتفع") {
-
         high++;
-
     }
 
 });
 
-document.getElementById(
-    "totalCount"
-).textContent = total;
-
-document.getElementById(
-    "lowCount"
-).textContent = low;
-
-document.getElementById(
-    "mediumCount"
-).textContent = medium;
-
-document.getElementById(
-    "highCount"
-).textContent = high;
+document.getElementById("totalCount").textContent = total;
+document.getElementById("lowCount").textContent = low;
+document.getElementById("mediumCount").textContent = medium;
+document.getElementById("highCount").textContent = high;
 ```
 
 }
-
-/* =========================================
-تحليل رابط جديد
-========================================= */
 
 function newAnalysis() {
 
 ```
 const urlInput =
-    document.getElementById(
-        "urlInput"
-    );
+    document.getElementById("urlInput");
 
 const resultDiv =
-    document.getElementById(
-        "result"
-    );
+    document.getElementById("result");
 
 urlInput.value = "";
-
 resultDiv.innerHTML = "";
-
 urlInput.focus();
 ```
 
 }
-
-/* =========================================
-تشغيل السجل والإحصائيات عند فتح الموقع
-========================================= */
 
 displayHistory();
 updateStats();
