@@ -1,247 +1,189 @@
 <!DOCTYPE html>
-
 <html lang="ar" dir="rtl">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-```
-<title>LinkGuard | تحليل الروابط</title>
+    <title>LinkGuard | تحليل الروابط</title>
 
-<link rel="stylesheet" href="style.css">
-```
-
+    <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
-```
-<div class="container">
+    <!-- زر الوضع الفاتح والداكن -->
+    <button id="themeToggle" class="theme-toggle">
+        🌙 الوضع الداكن
+    </button>
 
-    <!-- الشعار والعنوان -->
+    <!-- الهيدر -->
+    <header class="hero">
+        <div class="logo">🛡️</div>
 
-    <div class="brand">
-
-        <div class="logo">
-            🛡️
-        </div>
-
-        <h1>
-            LinkGuard
-        </h1>
-
-        <p class="subtitle">
-            تحليل الروابط واكتشاف المؤشرات المشبوهة
-        </p>
-
-    </div>
-
-
-    <!-- معلومات عن المشروع -->
-
-    <div class="info-card">
-
-        <h2>
-            حماية تبدأ قبل فتح الرابط
-        </h2>
+        <h1>LinkGuard</h1>
 
         <p>
-            يقوم LinkGuard بتحليل الرابط واكتشاف مجموعة من
-            المؤشرات الأمنية التي قد تساعد في التعرف على
-            الروابط المشبوهة.
+            تحليل الروابط واكتشاف المؤشرات المشبوهة
+        </p>
+    </header>
+
+
+    <!-- بطاقة المعلومات -->
+    <section class="info-card">
+
+        <h2>🛡️ حماية تبدأ قبل فتح الرابط</h2>
+
+        <p>
+            أدخل أي رابط لتحليله واكتشاف المؤشرات
+            التي قد تدل على وجود رابط مشبوه.
         </p>
 
-    </div>
+    </section>
 
 
-    <!-- خانة تحليل الرابط -->
+    <!-- قسم التحليل -->
+    <main>
 
-    <div class="scanner-box">
+        <section class="analyzer">
 
-        <input
-            type="text"
-            id="urlInput"
-            placeholder="أدخل الرابط هنا..."
-        >
+            <h2>🔎 تحليل الرابط</h2>
 
-        <button type="button" onclick="analyzeURL()">
-            تحليل الرابط
-        </button>
+            <div class="input-area">
 
-    </div>
+                <input
+                    type="text"
+                    id="urlInput"
+                    placeholder="أدخل الرابط هنا..."
+                    autocomplete="off"
+                >
+
+                <button onclick="analyzeURL()">
+                    تحليل الرابط
+                </button>
+
+            </div>
+
+        </section>
 
 
-    <!-- نتيجة التحليل -->
-
-    <div id="result" class="result"></div>
-
-
-    <!-- سجل التحليلات -->
-
-    <div class="history-section">
-
-        <h2>
-            سجل التحليلات
-        </h2>
+        <!-- نتيجة التحليل -->
+        <section id="result"></section>
 
 
         <!-- الإحصائيات -->
+        <section class="statistics">
 
-        <div class="stats">
+            <h2>📊 إحصائيات التحليل</h2>
 
-            <div class="stat-card">
+            <div class="stats-container">
 
-                <div class="stat-icon">
-                    🔎
+                <div class="stat-card">
+                    <strong id="totalCount">0</strong>
+                    <span>إجمالي التحليلات</span>
                 </div>
 
-                <div class="stat-number" id="totalCount">
-                    0
+                <div class="stat-card">
+                    <strong id="lowCount">0</strong>
+                    <span>منخفض</span>
                 </div>
 
-                <div class="stat-label">
-                    إجمالي التحليلات
+                <div class="stat-card">
+                    <strong id="mediumCount">0</strong>
+                    <span>متوسط</span>
                 </div>
 
-            </div>
-
-
-            <div class="stat-card low-stat">
-
-                <div class="stat-icon">
-                    🟢
-                </div>
-
-                <div class="stat-number" id="lowCount">
-                    0
-                </div>
-
-                <div class="stat-label">
-                    منخفض
+                <div class="stat-card">
+                    <strong id="highCount">0</strong>
+                    <span>مرتفع</span>
                 </div>
 
             </div>
 
+        </section>
 
-            <div class="stat-card medium-stat">
 
-                <div class="stat-icon">
-                    🟠
+        <!-- سجل التحليلات -->
+        <section class="history-section">
+
+            <h2>📋 سجل التحليلات</h2>
+
+            <div id="history">
+                <p>لا توجد تحليلات سابقة.</p>
+            </div>
+
+        </section>
+
+
+        <!-- المميزات -->
+        <section class="features">
+
+            <h2>✨ مميزات LinkGuard</h2>
+
+            <div class="features-container">
+
+                <div class="feature-card">
+
+                    <div class="feature-icon">🔗</div>
+
+                    <h3>تحليل الرابط</h3>
+
+                    <p>
+                        تحليل مكونات الرابط واكتشاف المؤشرات
+                        غير المعتادة.
+                    </p>
+
                 </div>
 
-                <div class="stat-number" id="mediumCount">
-                    0
+
+                <div class="feature-card">
+
+                    <div class="feature-icon">⚠️</div>
+
+                    <h3>تقييم الخطورة</h3>
+
+                    <p>
+                        إعطاء درجة خطورة واضحة من 0 إلى 100.
+                    </p>
+
                 </div>
 
-                <div class="stat-label">
-                    متوسط
+
+                <div class="feature-card">
+
+                    <div class="feature-icon">📋</div>
+
+                    <h3>سجل التحليلات</h3>
+
+                    <p>
+                        الاحتفاظ بآخر التحليلات للرجوع إليها
+                        لاحقًا.
+                    </p>
+
                 </div>
 
             </div>
 
+        </section>
 
-            <div class="stat-card high-stat">
-
-                <div class="stat-icon">
-                    🔴
-                </div>
-
-                <div class="stat-number" id="highCount">
-                    0
-                </div>
-
-                <div class="stat-label">
-                    مرتفع
-                </div>
-
-            </div>
-
-        </div>
+    </main>
 
 
-        <!-- مكان البطاقات -->
-
-        <div id="history">
-
-            <p>
-                لا توجد تحليلات سابقة.
-            </p>
-
-        </div>
-
-    </div>
-
-
-    <!-- مميزات LinkGuard -->
-
-    <div class="features">
-
-        <div class="feature">
-
-            <div class="feature-icon">
-                🔎
-            </div>
-
-            <h3>
-                تحليل الرابط
-            </h3>
-
-            <p>
-                فحص خصائص الرابط واكتشاف المؤشرات غير المعتادة.
-            </p>
-
-        </div>
-
-
-        <div class="feature">
-
-            <div class="feature-icon">
-                📊
-            </div>
-
-            <h3>
-                درجة الخطورة
-            </h3>
-
-            <p>
-                تحويل المؤشرات المكتشفة إلى درجة واضحة من 100.
-            </p>
-
-        </div>
-
-
-        <div class="feature">
-
-            <div class="feature-icon">
-                🛡️
-            </div>
-
-            <h3>
-                تفسير النتيجة
-            </h3>
-
-            <p>
-                عرض الأسباب التي ساهمت في تحديد مستوى الخطورة.
-            </p>
-
-        </div>
-
-    </div>
-
-
-    <!-- أسفل الصفحة -->
-
+    <!-- الفوتر -->
     <footer>
-        LinkGuard © 2026
+
+        <p>
+            LinkGuard © 2026
+        </p>
+
+        <p>
+            أداة لتحليل مؤشرات الروابط المشبوهة
+        </p>
+
     </footer>
 
-</div>
 
-
-<script src="script.js"></script>
-```
+    <!-- JavaScript -->
+    <script src="script.js"></script>
 
 </body>
-
 </html>
