@@ -30,19 +30,19 @@ function analyzeURL() {
     const hostname = parsedURL.hostname.toLowerCase();
     const fullURL = testURL.toLowerCase();
 
-    // 1. عدم استخدام HTTPS
+    // HTTPS
     if (parsedURL.protocol !== "https:") {
         score += 15;
         reasons.push("الرابط لا يستخدم HTTPS.");
     }
 
-    // 2. استخدام عنوان IP
+    // IP address
     if (/^(\d{1,3}\.){3}\d{1,3}$/.test(hostname)) {
         score += 25;
         reasons.push("الرابط يستخدم عنوان IP بدلاً من اسم نطاق.");
     }
 
-    // 3. كلمات مرتبطة بالتصيد
+    // Suspicious words
     const suspiciousWords = [
         "login",
         "verify",
@@ -68,92 +68,128 @@ function analyzeURL() {
         );
     }
 
-    // 4. طول الرابط
+    // Long URL
     if (testURL.length > 100) {
         score += 10;
         reasons.push("الرابط طويل بشكل غير معتاد.");
     }
 
-    // 5. الرمز @
+    // @ symbol
     if (testURL.includes("@")) {
         score += 20;
-        reasons.push("الرابط يحتوي على الرمز @، وقد يُستخدم لإخفاء الوجهة الحقيقية.");
+        reasons.push(
+            "الرابط يحتوي على الرمز @، وقد يُستخدم لإخفاء الوجهة الحقيقية."
+        );
     }
 
-    // 6. كثرة النطاقات الفرعية
+    // Subdomains
     const hostnameParts = hostname.split(".");
 
     if (hostnameParts.length > 3) {
         score += 10;
-        reasons.push("النطاق يحتوي على عدد غير معتاد من النطاقات الفرعية.");
+        reasons.push(
+            "النطاق يحتوي على عدد غير معتاد من النطاقات الفرعية."
+        );
     }
 
-    // 7. كثرة الشرطات
+    // Hyphens
     const hyphenCount = (hostname.match(/-/g) || []).length;
 
     if (hyphenCount >= 3) {
         score += 10;
-        reasons.push("اسم النطاق يحتوي على عدد مرتفع من الشرطات.");
+        reasons.push(
+            "اسم النطاق يحتوي على عدد مرتفع من الشرطات."
+        );
     }
 
-    // 8. كثرة الأرقام في اسم النطاق
+    // Numbers
     const digitCount = (hostname.match(/\d/g) || []).length;
 
     if (digitCount >= 4) {
         score += 10;
-        reasons.push("اسم النطاق يحتوي على عدد مرتفع من الأرقام.");
+        reasons.push(
+            "اسم النطاق يحتوي على عدد مرتفع من الأرقام."
+        );
     }
 
-    // 9. استخدام رموز غير معتادة في الرابط
+    // Unusual characters
     if (/[<>{}\\|[\]^`]/.test(testURL)) {
         score += 10;
-        reasons.push("الرابط يحتوي على رموز غير معتادة.");
+        reasons.push(
+            "الرابط يحتوي على رموز غير معتادة."
+        );
     }
 
-    // 10. وجود أكثر من معلمة في الرابط
+    // Many parameters
     const parameterCount = parsedURL.searchParams.size;
 
     if (parameterCount >= 5) {
         score += 10;
-        reasons.push("الرابط يحتوي على عدد كبير من المعلمات.");
+        reasons.push(
+            "الرابط يحتوي على عدد كبير من المعلمات."
+        );
     }
 
-    // الحد الأقصى للدرجة
+    // Maximum score
     score = Math.min(score, 100);
 
-    // تحديد مستوى الخطورة
+    // Risk level
     let level;
+    let levelClass;
 
     if (score < 30) {
         level = "منخفض";
+        levelClass = "low";
     } else if (score < 60) {
         level = "متوسط";
+        levelClass = "medium";
     } else {
         level = "مرتفع";
+        levelClass = "high";
     }
 
-    // إذا لم توجد مؤشرات
     if (reasons.length === 0) {
-        reasons.push("لم يتم اكتشاف مؤشرات مشبوهة واضحة.");
+        reasons.push(
+            "لم يتم اكتشاف مؤشرات مشبوهة واضحة."
+        );
     }
 
-    // عرض النتيجة
+    // Display result
     result.innerHTML =
-        "<div class='result-card'>" +
-        "<h2>نتيجة التحليل</h2>" +
-        "<p><strong>الرابط:</strong> " + escapeHTML(url) + "</p>" +
-        "<p><strong>درجة الخطورة:</strong> " + score + " / 100</p>" +
-        "<p><strong>مستوى الخطورة:</strong> " + level + "</p>" +
-        "<h3>أسباب النتيجة:</h3>" +
+        "<div class='result-card " + levelClass + "'>" +
+        "<h2>🔎 نتيجة التحليل</h2>" +
+
+        "<div class='result-info'>" +
+        "<p><strong>الرابط:</strong></p>" +
+        "<p class='analyzed-url'>" +
+        escapeHTML(url) +
+        "</p>" +
+        "</div>" +
+
+        "<div class='risk-score'>" +
+        "<span>درجة الخطورة</span>" +
+        "<strong>" + score + " / 100</strong>" +
+        "</div>" +
+
+        "<div class='risk-level'>" +
+        "<span>مستوى الخطورة</span>" +
+        "<strong>" + level + "</strong>" +
+        "</div>" +
+
+        "<h3>📋 أسباب النتيجة</h3>" +
+
         "<ul>" +
-        reasons.map(reason => "<li>" + escapeHTML(reason) + "</li>").join("") +
+        reasons
+            .map(reason => "<li>" + escapeHTML(reason) + "</li>")
+            .join("") +
         "</ul>" +
+
         "</div>";
 
-    // حفظ التحليل
+    // Save analysis
     saveAnalysis(url, score, level);
 
-    // تحديث الإحصائيات والسجل
+    // Update statistics and history
     updateStatistics();
     displayHistory();
 }
@@ -161,7 +197,9 @@ function analyzeURL() {
 
 function saveAnalysis(url, score, level) {
     let history =
-        JSON.parse(localStorage.getItem("linkguard_history")) || [];
+        JSON.parse(
+            localStorage.getItem("linkguard_history")
+        ) || [];
 
     history.unshift({
         url: url,
@@ -170,7 +208,7 @@ function saveAnalysis(url, score, level) {
         date: new Date().toLocaleString("ar-SA")
     });
 
-    // الاحتفاظ بآخر 50 تحليل
+    // Keep last 50 analyses
     if (history.length > 50) {
         history = history.slice(0, 50);
     }
@@ -192,10 +230,17 @@ function getHistory() {
 function updateStatistics() {
     const history = getHistory();
 
-    const totalCount = document.getElementById("totalCount");
-    const lowCount = document.getElementById("lowCount");
-    const mediumCount = document.getElementById("mediumCount");
-    const highCount = document.getElementById("highCount");
+    const totalCount =
+        document.getElementById("totalCount");
+
+    const lowCount =
+        document.getElementById("lowCount");
+
+    const mediumCount =
+        document.getElementById("mediumCount");
+
+    const highCount =
+        document.getElementById("highCount");
 
     if (totalCount) {
         totalCount.textContent = history.length;
@@ -203,17 +248,23 @@ function updateStatistics() {
 
     if (lowCount) {
         lowCount.textContent =
-            history.filter(item => item.level === "منخفض").length;
+            history.filter(
+                item => item.level === "منخفض"
+            ).length;
     }
 
     if (mediumCount) {
         mediumCount.textContent =
-            history.filter(item => item.level === "متوسط").length;
+            history.filter(
+                item => item.level === "متوسط"
+            ).length;
     }
 
     if (highCount) {
         highCount.textContent =
-            history.filter(item => item.level === "مرتفع").length;
+            history.filter(
+                item => item.level === "مرتفع"
+            ).length;
     }
 }
 
@@ -234,38 +285,47 @@ function displayHistory() {
         return;
     }
 
-    historyContainer.innerHTML = history.map(item =>
-        "<div class='history-card'>" +
-        "<p><strong>الرابط:</strong> " +
-        escapeHTML(item.url) +
-        "</p>" +
+    historyContainer.innerHTML =
+        history
+            .map(item =>
+                "<div class='history-card'>" +
 
-        "<p><strong>الدرجة:</strong> " +
-        item.score +
-        " / 100</p>" +
+                "<p><strong>الرابط:</strong> " +
+                escapeHTML(item.url) +
+                "</p>" +
 
-        "<p><strong>المستوى:</strong> " +
-        escapeHTML(item.level) +
-        "</p>" +
+                "<p><strong>الدرجة:</strong> " +
+                item.score +
+                " / 100</p>" +
 
-        "<small>" +
-        escapeHTML(item.date) +
-        "</small>" +
+                "<p><strong>المستوى:</strong> " +
+                escapeHTML(item.level) +
+                "</p>" +
 
-        "</div>"
-    ).join("");
+                "<small>" +
+                escapeHTML(item.date) +
+                "</small>" +
+
+                "</div>"
+            )
+            .join("");
 }
 
 
 function escapeHTML(text) {
     const div = document.createElement("div");
+
     div.textContent = text;
+
     return div.innerHTML;
 }
 
 
 // تشغيل السجل عند فتح الموقع
-document.addEventListener("DOMContentLoaded", function () {
-    updateStatistics();
-    displayHistory();
-});
+document.addEventListener(
+    "DOMContentLoaded",
+    function () {
+        updateStatistics();
+        displayHistory();
+    }
+);
