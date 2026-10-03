@@ -9,7 +9,7 @@ body {
     background: #f5f7fb;
     color: #1f2937;
     min-height: 100vh;
-    transition: 0.3s;
+    transition: background 0.3s, color 0.3s;
 }
 
 /* زر الوضع */
@@ -17,48 +17,41 @@ body {
     position: fixed;
     top: 20px;
     left: 20px;
-    z-index: 1000;
+    z-index: 9999;
 
-    padding: 10px 16px;
-    border: none;
-    border-radius: 12px;
+    padding: 10px 15px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
 
     background: white;
     color: #222;
 
     font-size: 14px;
-    font-weight: bold;
-
     cursor: pointer;
 
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.12);
-    transition: 0.3s;
-}
-
-.theme-toggle:hover {
-    transform: translateY(-2px);
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.12);
 }
 
 
 /* الهيدر */
 .hero {
     text-align: center;
-    padding: 70px 20px 35px;
+    padding: 70px 20px 30px;
 }
 
 .logo {
-    font-size: 55px;
+    font-size: 50px;
     margin-bottom: 10px;
 }
 
 .hero h1 {
-    font-size: 42px;
+    font-size: 40px;
     margin-bottom: 10px;
 }
 
 .hero p {
-    font-size: 18px;
     color: #6b7280;
+    font-size: 17px;
 }
 
 
@@ -67,9 +60,12 @@ body {
     max-width: 850px;
     margin: 20px auto;
     padding: 25px;
+
     background: white;
     border-radius: 18px;
+
     text-align: center;
+
     box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
 }
 
@@ -78,18 +74,22 @@ body {
 }
 
 
-/* الأقسام */
+/* المحتوى */
 main {
     max-width: 1000px;
     margin: auto;
     padding: 20px;
 }
 
+
+/* التحليل */
 .analyzer {
     background: white;
     padding: 30px;
     border-radius: 20px;
+
     text-align: center;
+
     box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
 }
 
@@ -98,7 +98,7 @@ main {
 }
 
 
-/* إدخال الرابط */
+/* خانة الرابط */
 .input-area {
     display: flex;
     gap: 10px;
@@ -106,9 +106,12 @@ main {
 
 .input-area input {
     flex: 1;
+
     padding: 15px;
+
     border: 2px solid #e5e7eb;
     border-radius: 12px;
+
     font-size: 16px;
     outline: none;
 }
@@ -119,29 +122,32 @@ main {
 
 .input-area button {
     padding: 15px 25px;
+
     border: none;
     border-radius: 12px;
+
     background: #4f46e5;
     color: white;
+
     font-size: 16px;
     font-weight: bold;
+
     cursor: pointer;
 }
 
-.input-area button:hover {
-    opacity: 0.9;
-}
 
-
-/* نتيجة التحليل */
+/* النتيجة */
 #result {
     margin-top: 25px;
 }
 
 .result-card {
-    padding: 30px;
-    border-radius: 20px;
     background: white;
+
+    padding: 30px;
+
+    border-radius: 20px;
+
     box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
 }
 
@@ -155,9 +161,13 @@ main {
 
 .analyzed-url {
     margin-top: 8px;
+
     padding: 12px;
+
     background: #f3f4f6;
+
     border-radius: 10px;
+
     word-break: break-all;
 }
 
@@ -166,10 +176,14 @@ main {
     display: flex;
     justify-content: space-between;
     align-items: center;
+
     padding: 15px;
+
     margin-top: 10px;
-    border-radius: 12px;
+
     background: #f3f4f6;
+
+    border-radius: 12px;
 }
 
 .result-card h3 {
@@ -215,21 +229,29 @@ main {
 
 .stats-container {
     display: grid;
+
     grid-template-columns: repeat(4, 1fr);
+
     gap: 15px;
 }
 
 .stat-card {
     background: white;
+
     padding: 22px;
+
     border-radius: 16px;
+
     text-align: center;
+
     box-shadow: 0 5px 20px rgba(0, 0, 0, 0.06);
 }
 
 .stat-card strong {
     display: block;
+
     font-size: 30px;
+
     margin-bottom: 8px;
 }
 
@@ -237,9 +259,13 @@ main {
 /* السجل */
 .history-card {
     background: white;
+
     padding: 20px;
+
     margin-bottom: 12px;
+
     border-radius: 15px;
+
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.06);
 }
 
@@ -255,20 +281,27 @@ main {
 /* المميزات */
 .features-container {
     display: grid;
+
     grid-template-columns: repeat(3, 1fr);
+
     gap: 20px;
 }
 
 .feature-card {
     background: white;
+
     padding: 25px;
+
     border-radius: 18px;
+
     text-align: center;
+
     box-shadow: 0 5px 20px rgba(0, 0, 0, 0.06);
 }
 
 .feature-icon {
     font-size: 35px;
+
     margin-bottom: 12px;
 }
 
@@ -280,26 +313,28 @@ main {
 /* الفوتر */
 footer {
     text-align: center;
+
     padding: 35px 20px;
+
     margin-top: 40px;
+
     color: #6b7280;
 }
 
 
+/* ========================= */
 /* الوضع الداكن */
+/* ========================= */
+
 body.dark-mode {
     background: #111827;
     color: #f3f4f6;
 }
 
-body.dark-mode .hero p,
-body.dark-mode footer {
-    color: #9ca3af;
-}
-
 body.dark-mode .theme-toggle {
     background: #1f2937;
     color: white;
+    border-color: #374151;
 }
 
 body.dark-mode .info-card,
@@ -310,6 +345,11 @@ body.dark-mode .history-card,
 body.dark-mode .feature-card {
     background: #1f2937;
     color: #f3f4f6;
+}
+
+body.dark-mode .hero p,
+body.dark-mode footer {
+    color: #9ca3af;
 }
 
 body.dark-mode .analyzed-url,
@@ -328,12 +368,8 @@ body.dark-mode .input-area input::placeholder {
     color: #9ca3af;
 }
 
-body.dark-mode .history-card small {
-    color: #9ca3af;
-}
 
-
-/* للجوال */
+/* الجوال */
 @media (max-width: 700px) {
 
     .theme-toggle {
