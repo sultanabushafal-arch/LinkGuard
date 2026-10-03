@@ -1,236 +1,270 @@
-async function analyzeURL() {
-    const urlInput = document.getElementById("urlInput");
-    const resultDiv = document.getElementById("result");
+function analyzeURL() {
+const input = document.getElementById("urlInput");
+const result = document.getElementById("result");
 
-    const url = urlInput.value.trim();
+```
+const url = input.value.trim();
 
-    if (url === "") {
-        resultDiv.innerHTML = "<p>يرجى إدخال رابط أولًا.</p>";
-        return;
-    }
-
-    resultDiv.innerHTML = "<p>جاري تحليل الرابط...</p>";
-
-    try {
-        const response = await fetch(
-            "https://linkguard-backend-w8r0.onrender.com/analyze",
-            {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    url: url
-                })
-            }
-        );
-
-        const data = await response.json();
-
-        if (!response.ok) {
-            throw new Error("حدث خطأ في الخادم");
-        }
-
-        var riskClass = "low";
-
-        if (data.risk === "مرتفع") {
-            riskClass = "high";
-        } else if (data.risk === "متوسط") {
-            riskClass = "medium";
-        }
-
-        var reasonsHTML = "";
-
-        data.reasons.forEach(function(reason) {
-            reasonsHTML += "<li>" + reason + "</li>";
-        });
-
-        var degree = data.score * 3.6;
-
-        saveToHistory(data);
-
-        resultDiv.innerHTML =
-            "<div class=\"result-card " + riskClass + "\">" +
-                "<h2>نتيجة التحليل</h2>" +
-
-                "<p>" +
-                    "<strong>الرابط:</strong> " +
-                    "<span dir=\"ltr\">" +
-                        data.url +
-                    "</span>" +
-                "</p>" +
-
-                "<div class=\"risk-meter\">" +
-                    "<div class=\"meter-circle\" style=\"--degree: " +
-                        degree +
-                        "deg;\">" +
-
-                        "<div class=\"meter-inner\">" +
-                            "<span class=\"meter-score\">" +
-                                data.score +
-                            "</span>" +
-
-                            "<span class=\"meter-total\">" +
-                                "/ 100" +
-                            "</span>" +
-                        "</div>" +
-
-                    "</div>" +
-                "</div>" +
-
-                "<div class=\"risk " +
-                    riskClass +
-                "\">" +
-                    "مستوى الخطورة: " +
-                    data.risk +
-                "</div>" +
-
-                "<h3>أسباب النتيجة:</h3>" +
-
-                "<ul>" +
-                    reasonsHTML +
-                "</ul>" +
-
-                "<button class=\"new-analysis\" onclick=\"newAnalysis()\">" +
-                    "تحليل رابط جديد" +
-                "</button>" +
-
-            "</div>";
-
-        displayHistory();
-        updateStats();
-
-    } catch (error) {
-        console.error("Error:", error);
-
-        resultDiv.innerHTML =
-            "<p>تعذر الاتصال بالخادم.</p>" +
-            "<p>تأكد من تشغيل Backend.</p>";
-    }
+if (!url) {
+    result.innerHTML = `
+        <div class="result-card">
+            <h3>تنبيه</h3>
+            <p>الرجاء إدخال رابط أولاً.</p>
+        </div>
+    `;
+    return;
 }
 
+let score = 0;
+let reasons = [];
 
-function saveToHistory(data) {
-    var history = JSON.parse(
-        localStorage.getItem("linkguard_history")
-    ) || [];
+let testURL = url;
 
-    history.unshift({
-        url: data.url,
-        score: data.score,
-        risk: data.risk
-    });
+if (!/^https?:\/\//i.test(testURL)) {
+    testURL = "https://" + testURL;
+}
 
-    history = history.slice(0, 10);
+let parsedURL;
 
-    localStorage.setItem(
-        "linkguard_history",
-        JSON.stringify(history)
+try {
+    parsedURL = new URL(testURL);
+} catch (error) {
+    result.innerHTML = `
+        <div class="result-card">
+            <h3>رابط غير صالح</h3>
+            <p>تأكد من كتابة الرابط بشكل صحيح.</p>
+        </div>
+    `;
+    return;
+}
+
+const hostname = parsedURL.hostname.toLowerCase();
+const fullURL = testURL.toLowerCase();
+
+// استخدام عنوان IP بدلاً من اسم نطاق
+if (/^(\d{1,3}\.){3}\d{1,3}$/.test(hostname)) {
+    score += 25;
+    reasons.push("الرابط يستخدم عنوان IP بدلاً من اسم نطاق.");
+}
+
+// HTTPS
+if (parsedURL.protocol !== "https:") {
+    score += 15;
+    reasons.push("الرابط لا يستخدم HTTPS.");
+}
+
+// كلمات شائعة في الروابط المشبوهة
+const suspiciousWords = [
+    "login",
+    "verify",
+    "verification",
+    "account",
+    "secure",
+    "update",
+    "password",
+    "signin",
+    "confirm"
+];
+
+const foundWords = suspiciousWords.filter(word =>
+    fullURL.includes(word)
+);
+
+if (foundWords.length > 0) {
+    score += Math.min(foundWords.length * 5, 20);
+    reasons.push(
+        "الرابط يحتوي على كلمات قد ترتبط بتسجيل الدخول أو التحقق أو الحسابات."
     );
 }
 
+// النطاق الفرعي
+const subdomainParts = hostname.split(".");
+
+if (subdomainParts.length > 3) {
+    score += 10;
+    reasons.push("النطاق يحتوي على عدد غير معتاد من النطاقات الفرعية.");
+}
+
+// طول الرابط
+if (testURL.length > 100) {
+    score += 10;
+    reasons.push("الرابط طويل بشكل غير معتاد.");
+}
+
+// وجود رمز @
+if (testURL.includes("@")) {
+    score += 20;
+    reasons.push("الرابط يحتوي على الرمز @، وقد يُستخدم لإخفاء الوجهة الحقيقية.");
+}
+
+// كثرة الشرطات
+const hyphenCount = (hostname.match(/-/g) || []).length;
+
+if (hyphenCount >= 3) {
+    score += 10;
+    reasons.push("اسم النطاق يحتوي على عدد مرتفع من الشرطات.");
+}
+
+// منع تجاوز 100
+score = Math.min(score, 100);
+
+let level = "";
+let levelClass = "";
+
+if (score < 30) {
+    level = "منخفض";
+    levelClass = "low";
+} else if (score < 60) {
+    level = "متوسط";
+    levelClass = "medium";
+} else {
+    level = "مرتفع";
+    levelClass = "high";
+}
+
+if (reasons.length === 0) {
+    reasons.push("لم يتم اكتشاف مؤشرات مشبوهة واضحة.");
+}
+
+result.innerHTML = `
+    <div class="result-card ${levelClass}">
+        <h2>نتيجة التحليل</h2>
+
+        <p>
+            <strong>الرابط:</strong>
+            <a href="${escapeHTML(testURL)}" target="_blank" rel="noopener noreferrer">
+                ${escapeHTML(url)}
+            </a>
+        </p>
+
+        <p>
+            <strong>درجة الخطورة:</strong>
+            ${score} / 100
+        </p>
+
+        <p>
+            <strong>مستوى الخطورة:</strong>
+            ${level}
+        </p>
+
+        <h3>أسباب النتيجة:</h3>
+
+        <ul>
+            ${reasons.map(reason => `<li>${escapeHTML(reason)}</li>`).join("")}
+        </ul>
+    </div>
+`;
+
+saveAnalysis(url, score, level);
+updateStatistics();
+displayHistory();
+```
+
+}
+
+function saveAnalysis(url, score, level) {
+let history = JSON.parse(localStorage.getItem("linkguard_history")) || [];
+
+```
+history.unshift({
+    url: url,
+    score: score,
+    level: level,
+    date: new Date().toLocaleString("ar-SA")
+});
+
+if (history.length > 50) {
+    history = history.slice(0, 50);
+}
+
+localStorage.setItem("linkguard_history", JSON.stringify(history));
+```
+
+}
+
+function getHistory() {
+return JSON.parse(localStorage.getItem("linkguard_history")) || [];
+}
+
+function updateStatistics() {
+const history = getHistory();
+
+```
+const totalCount = document.getElementById("totalCount");
+const lowCount = document.getElementById("lowCount");
+const mediumCount = document.getElementById("mediumCount");
+const highCount = document.getElementById("highCount");
+
+if (totalCount) {
+    totalCount.textContent = history.length;
+}
+
+if (lowCount) {
+    lowCount.textContent = history.filter(item => item.level === "منخفض").length;
+}
+
+if (mediumCount) {
+    mediumCount.textContent = history.filter(item => item.level === "متوسط").length;
+}
+
+if (highCount) {
+    highCount.textContent = history.filter(item => item.level === "مرتفع").length;
+}
+```
+
+}
 
 function displayHistory() {
-    var historyDiv = document.getElementById("history");
+const historyContainer = document.getElementById("history");
 
-    if (!historyDiv) {
-        return;
-    }
-
-    var history = JSON.parse(
-        localStorage.getItem("linkguard_history")
-    ) || [];
-
-    if (history.length === 0) {
-        historyDiv.innerHTML =
-            "<p>لا توجد تحليلات سابقة.</p>";
-        return;
-    }
-
-    var historyHTML = "";
-
-    history.forEach(function(item) {
-        var riskClass = "low";
-
-        if (item.risk === "مرتفع") {
-            riskClass = "high";
-        } else if (item.risk === "متوسط") {
-            riskClass = "medium";
-        }
-
-        historyHTML +=
-            "<div class=\"history-item\">" +
-
-                "<div class=\"history-info\">" +
-                    "<span class=\"history-label\">" +
-                        "الرابط الذي تم تحليله" +
-                    "</span>" +
-
-                    "<div class=\"history-url\" dir=\"ltr\">" +
-                        item.url +
-                    "</div>" +
-                "</div>" +
-
-                "<div class=\"history-score-box\">" +
-                    "<span class=\"history-score-label\">" +
-                        "درجة الخطورة" +
-                    "</span>" +
-
-                    "<span class=\"history-score\">" +
-                        item.score +
-                        " / 100" +
-                    "</span>" +
-                "</div>" +
-
-                "<div class=\"history-risk " +
-                    riskClass +
-                "\">" +
-                    item.risk +
-                "</div>" +
-
-            "</div>";
-    });
-
-    historyDiv.innerHTML = historyHTML;
+```
+if (!historyContainer) {
+    return;
 }
 
+const history = getHistory();
 
-function updateStats() {
-    var history = JSON.parse(
-        localStorage.getItem("linkguard_history")
-    ) || [];
-
-    var total = history.length;
-    var low = 0;
-    var medium = 0;
-    var high = 0;
-
-    history.forEach(function(item) {
-        if (item.risk === "منخفض") {
-            low++;
-        } else if (item.risk === "متوسط") {
-            medium++;
-        } else if (item.risk === "مرتفع") {
-            high++;
-        }
-    });
-
-    document.getElementById("totalCount").textContent = total;
-    document.getElementById("lowCount").textContent = low;
-    document.getElementById("mediumCount").textContent = medium;
-    document.getElementById("highCount").textContent = high;
+if (history.length === 0) {
+    historyContainer.innerHTML = `
+        <p>لا توجد تحليلات سابقة.</p>
+    `;
+    return;
 }
 
+historyContainer.innerHTML = history.map(item => `
+    <div class="history-card">
+        <p>
+            <strong>الرابط:</strong>
+            ${escapeHTML(item.url)}
+        </p>
 
-function newAnalysis() {
-    const urlInput = document.getElementById("urlInput");
-    const resultDiv = document.getElementById("result");
+        <p>
+            <strong>الدرجة:</strong>
+            ${item.score} / 100
+        </p>
 
-    urlInput.value = "";
-    resultDiv.innerHTML = "";
-    urlInput.focus();
+        <p>
+            <strong>المستوى:</strong>
+            ${escapeHTML(item.level)}
+        </p>
+
+        <small>
+            ${escapeHTML(item.date)}
+        </small>
+    </div>
+`).join("");
+```
+
 }
 
+function escapeHTML(text) {
+const div = document.createElement("div");
+div.textContent = text;
+return div.innerHTML;
+}
 
+// تشغيل سجل التحليلات عند فتح الصفحة
+document.addEventListener("DOMContentLoaded", function () {
+updateStatistics();
 displayHistory();
-updateStats();
+});
