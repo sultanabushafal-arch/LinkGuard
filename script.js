@@ -63,6 +63,7 @@ function analyzeURL() {
 
     if (foundWords.length > 0) {
         score += Math.min(foundWords.length * 5, 25);
+
         reasons.push(
             "الرابط يحتوي على كلمات قد ترتبط بتسجيل الدخول أو التحقق أو الحسابات."
         );
@@ -157,6 +158,7 @@ function analyzeURL() {
     // Display result
     result.innerHTML =
         "<div class='result-card " + levelClass + "'>" +
+
         "<h2>🔎 نتيجة التحليل</h2>" +
 
         "<div class='result-info'>" +
@@ -186,16 +188,15 @@ function analyzeURL() {
 
         "</div>";
 
-    // Save analysis
     saveAnalysis(url, score, level);
 
-    // Update statistics and history
     updateStatistics();
     displayHistory();
 }
 
 
 function saveAnalysis(url, score, level) {
+
     let history =
         JSON.parse(
             localStorage.getItem("linkguard_history")
@@ -208,7 +209,6 @@ function saveAnalysis(url, score, level) {
         date: new Date().toLocaleString("ar-SA")
     });
 
-    // Keep last 50 analyses
     if (history.length > 50) {
         history = history.slice(0, 50);
     }
@@ -221,6 +221,7 @@ function saveAnalysis(url, score, level) {
 
 
 function getHistory() {
+
     return JSON.parse(
         localStorage.getItem("linkguard_history")
     ) || [];
@@ -228,6 +229,7 @@ function getHistory() {
 
 
 function updateStatistics() {
+
     const history = getHistory();
 
     const totalCount =
@@ -270,6 +272,7 @@ function updateStatistics() {
 
 
 function displayHistory() {
+
     const historyContainer =
         document.getElementById("history");
 
@@ -280,40 +283,44 @@ function displayHistory() {
     const history = getHistory();
 
     if (history.length === 0) {
+
         historyContainer.innerHTML =
             "<p>لا توجد تحليلات سابقة.</p>";
+
         return;
     }
 
     historyContainer.innerHTML =
-        history
-            .map(item =>
-                "<div class='history-card'>" +
+        history.map(item =>
 
-                "<p><strong>الرابط:</strong> " +
-                escapeHTML(item.url) +
-                "</p>" +
+            "<div class='history-card'>" +
 
-                "<p><strong>الدرجة:</strong> " +
-                item.score +
-                " / 100</p>" +
+            "<p><strong>الرابط:</strong> " +
+            escapeHTML(item.url) +
+            "</p>" +
 
-                "<p><strong>المستوى:</strong> " +
-                escapeHTML(item.level) +
-                "</p>" +
+            "<p><strong>الدرجة:</strong> " +
+            item.score +
+            " / 100</p>" +
 
-                "<small>" +
-                escapeHTML(item.date) +
-                "</small>" +
+            "<p><strong>المستوى:</strong> " +
+            escapeHTML(item.level) +
+            "</p>" +
 
-                "</div>"
-            )
-            .join("");
+            "<small>" +
+            escapeHTML(item.date) +
+            "</small>" +
+
+            "</div>"
+
+        ).join("");
 }
 
 
 function escapeHTML(text) {
-    const div = document.createElement("div");
+
+    const div =
+        document.createElement("div");
 
     div.textContent = text;
 
@@ -321,47 +328,73 @@ function escapeHTML(text) {
 }
 
 
-// تشغيل السجل عند فتح الموقع
+/* تشغيل الموقع */
 document.addEventListener(
     "DOMContentLoaded",
     function () {
+
         updateStatistics();
         displayHistory();
-    }
-);
-// الوضع الفاتح والداكن
-const themeToggle = document.getElementById("themeToggle");
 
-if (themeToggle) {
+        const themeToggle =
+            document.getElementById("themeToggle");
 
-    // استرجاع الوضع المحفوظ
-    if (localStorage.getItem("linkguard_theme") === "dark") {
-        document.body.classList.add("dark-mode");
-        themeToggle.textContent = "☀️ الوضع الفاتح";
-    }
+        if (!themeToggle) {
+            return;
+        }
 
-    // تبديل الوضع
-    themeToggle.addEventListener("click", function () {
+        // استرجاع الوضع المحفوظ
+        if (
+            localStorage.getItem("linkguard_theme")
+            === "dark"
+        ) {
 
-        document.body.classList.toggle("dark-mode");
+            document.body.classList.add("dark-mode");
 
-        if (document.body.classList.contains("dark-mode")) {
-
-            themeToggle.textContent = "☀️ الوضع الفاتح";
-
-            localStorage.setItem(
-                "linkguard_theme",
-                "dark"
-            );
+            themeToggle.textContent =
+                "☀️ الوضع الفاتح";
 
         } else {
 
-            themeToggle.textContent = "🌙 الوضع الداكن";
-
-            localStorage.setItem(
-                "linkguard_theme",
-                "light"
-            );
+            themeToggle.textContent =
+                "🌙 الوضع الداكن";
         }
-    });
-}
+
+
+        // زر تغيير الوضع
+        themeToggle.addEventListener(
+            "click",
+            function () {
+
+                document.body.classList.toggle(
+                    "dark-mode"
+                );
+
+                if (
+                    document.body.classList.contains(
+                        "dark-mode"
+                    )
+                ) {
+
+                    themeToggle.textContent =
+                        "☀️ الوضع الفاتح";
+
+                    localStorage.setItem(
+                        "linkguard_theme",
+                        "dark"
+                    );
+
+                } else {
+
+                    themeToggle.textContent =
+                        "🌙 الوضع الداكن";
+
+                    localStorage.setItem(
+                        "linkguard_theme",
+                        "light"
+                    );
+                }
+            }
+        );
+    }
+);
