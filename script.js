@@ -329,3 +329,39 @@ document.addEventListener(
         displayHistory();
     }
 );
+// الوضع الفاتح والداكن
+const themeToggle = document.getElementById("themeToggle");
+
+if (themeToggle) {
+
+    // استرجاع الوضع المحفوظ
+    if (localStorage.getItem("linkguard_theme") === "dark") {
+        document.body.classList.add("dark-mode");
+        themeToggle.textContent = "☀️ الوضع الفاتح";
+    }
+
+    // تبديل الوضع
+    themeToggle.addEventListener("click", function () {
+
+        document.body.classList.toggle("dark-mode");
+
+        if (document.body.classList.contains("dark-mode")) {
+
+            themeToggle.textContent = "☀️ الوضع الفاتح";
+
+            localStorage.setItem(
+                "linkguard_theme",
+                "dark"
+            );
+
+        } else {
+
+            themeToggle.textContent = "🌙 الوضع الداكن";
+
+            localStorage.setItem(
+                "linkguard_theme",
+                "light"
+            );
+        }
+    });
+}
